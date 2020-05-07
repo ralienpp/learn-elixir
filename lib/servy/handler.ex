@@ -69,22 +69,12 @@ defmodule Servy.Handler do
 
 	def format_response(%Conv{} = conv) do
 		"""
-		HTTP/1.1 #{conv.status} #{status_reason(conv.status)}
+		HTTP/1.1 #{Conv.full_status(conv)}
 		Content-Type: text/plain
 		Content-Length: #{String.length(conv.resp_body)}
 
 		#{conv.resp_body}
 		"""
-	end
-
-	defp status_reason(code) do
-		# defp makes it a "private" function that only
-		# works inside this module
-		%{
-			200 => "OK",
-			404 => "Not found",
-			500 => "Internal server error"
-		}[code]
 	end
 end
 
