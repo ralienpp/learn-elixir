@@ -15,9 +15,9 @@ defmodule Servy.Parser do
 	    	# |> List.first
 	    	# |> String.split(" ")
 
-	    params = parse_params(raw_params)
-
 	    headers = parse_headers(raw_headers, %{})
+
+	    params = parse_params(headers["Content-Type"], raw_params)
 
 	    # We treat this as a struct, not as a regular map,
 	    # note that we don't provide values for all elements,
@@ -28,8 +28,16 @@ defmodule Servy.Parser do
 	}
 	end
 
-	def parse_params(params) do
+	def parse_params("application/x-www-form-urlencoded", params) do
 		params |> String.trim |> URI.decode_query
+	end
+
+	def parse_params(_content_type, _params) do
+		IO.puts "Generic params #{_params}"
+		# Note that we still return a map in the end, in case
+		# this is used for chaining, it should conform to the
+		# chain "API", so to speak
+		%{}
 	end
 
 	def parse_headers([head | tail], accumulator) do
