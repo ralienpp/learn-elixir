@@ -1,6 +1,10 @@
 # Servy
 
-**TODO: Add description**
+Hello world in Elixir
+
+## Usage
+
+`elixir lib/servy/handler.ex`
 
 ## Installation
 
