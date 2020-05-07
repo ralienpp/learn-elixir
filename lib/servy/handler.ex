@@ -1,9 +1,5 @@
 defmodule Servy.Handler do
 	def handle(request) do
-		#conv = parse(request)
-		#conv = route(conv)
-		#format_response(conv)
-
 		request
 		|> parse
 		|> rewrite_path
@@ -34,11 +30,6 @@ defmodule Servy.Handler do
 	# will fall to this handler and leave things unchanged
 	def rewrite_path(conv), do: conv
 
-	# def log(conv) do
-	#	IO.inspect conv
-	# end
-
-	# same as above
 	def log(conv), do: IO.inspect conv
 
 	# this one is idiomatic Elixir
@@ -49,15 +40,6 @@ defmodule Servy.Handler do
 	    	|> List.first
 	    	|> String.split(" ")
 		%{method: method, path: url, resp_body: "", status: nil}
-	end
-
-	def route_old(conv) do
-		# %{ conv | resp_body: "vvvvvvvery new response"}
-		if conv.path == "/url" do
-			%{conv| resp_body: "generic url"}
-		else
-			%{conv| resp_body: "specific url for bears"}
-		end
 	end
 
 	def route(conv) do
