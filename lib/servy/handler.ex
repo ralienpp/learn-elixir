@@ -1,4 +1,14 @@
 defmodule Servy.Handler do
+
+	@moduledoc "Basic handler of HTTP requests."
+
+	@version "0.0.4"
+
+	def initialize do
+		IO.puts "Starting server v.#{@version}"
+	end
+
+	@doc "Transforms a request into a response"
 	def handle(request) do
 		request
 		|> parse
@@ -9,6 +19,7 @@ defmodule Servy.Handler do
 		|> format_response
 	end
 
+	@doc "Logs 404 requests, indicating their path"
 	def track(%{status: 404, path: path} = conv) do
 		IO.puts "Warning, no such path `#{path}`"
 		# make sure you return the conv here, so the
@@ -168,6 +179,7 @@ User-Agent: murzik/1.0
 """
 
 
+Servy.Handler.initialize
 response = Servy.Handler.handle(request)
 IO.puts response
 
