@@ -55,13 +55,26 @@ defmodule Servy.Handler do
 		%{conv| status: 200, resp_body: "Bear ID=#{id}"}
 	end
 
+	def route(%{method: "GET", path: "/about"} = conv) do
+		case File.read("pages/about.html") do
+			{:ok, content} ->
+				%{conv| status: 200, resp_body: "#{content}"}
+
+			{:error, :enoent} ->
+				%{conv| status: 404, resp_body: "File not found, schade!"}
+
+			{:error, reason} ->
+				%{conv| status: 500, resp_body: "File error: #{reason}"}
+		end
+	end
+
 	# this is a default handler which is invoked when
 	# none of the above `route` functions is matched
 	# NOTE that it must be physically the last entry,
 	#      otherwise it will eagerly match anything
 	#      and the other handlers won't be invoked.
 	def route(%{path: path} = conv) do
-		%{conv| status: 404, resp_body: "No such path on the server"}
+		%{conv| status: 404, resp_body: "No such path on the server #{path}"}
 	end
 
 	def format_response(conv) do
@@ -125,6 +138,14 @@ User-Agent: murzik/1.0
 
 """
 
+request_about = """
+GET /about HTTP/1.1
+Host: example.com
+Accept: */*
+User-Agent: murzik/1.0
+
+"""
+
 
 response = Servy.Handler.handle(request)
 IO.puts response
@@ -138,3 +159,4 @@ IO.puts Servy.Handler.handle(request_bears_specific)
 IO.puts Servy.Handler.handle(request_wildlife)
 
 IO.puts Servy.Handler.handle(request_bigf)
+IO.puts Servy.Handler.handle(request_about)
