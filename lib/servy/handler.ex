@@ -64,6 +64,10 @@ defmodule Servy.Handler do
 		%{conv| status: 200, resp_body: "specific url for bears"}
 	end
 
+	def route(conv, "GET", "/bears/" <> id) do
+		%{conv| status: 200, resp_body: "Bear ID=#{id}"}
+	end
+
 	# this is a default handler which is invoked when
 	# none of the above `route` functions is matched
 	# NOTE that it must be physically the last entry,
@@ -110,6 +114,14 @@ User-Agent: murzik/1.0
 
 """
 
+request_bears_specific = """
+GET /bears/45 HTTP/1.1
+Host: example.com
+Accept: */*
+User-Agent: murzik/1.0
+
+"""
+
 request_bigf = """
 GET /bigfoot HTTP/1.1
 Host: example.com
@@ -124,5 +136,7 @@ IO.puts response
 
 
 IO.puts Servy.Handler.handle(request_bears)
+
+IO.puts Servy.Handler.handle(request_bears_specific)
 
 IO.puts Servy.Handler.handle(request_bigf)
