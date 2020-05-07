@@ -37,6 +37,11 @@ defmodule Servy.Handler do
 		%{conv| status: 200, resp_body: "Bear ID=#{id}"}
 	end
 
+	def route(%Conv{method: "POST", path: "/bears"} = conv) do
+		params = %{"name" => "Balamut", "type" => "Brown"}
+		%{conv| status: 201, resp_body: "Bear created, name:#{params["name"]}"}
+	end
+
 	def route(%Conv{method: "GET", path: "/about"} = conv) do
 		File.read("pages/about.html")
 		# NOTE: the tuple returned by File.read is implicitly
@@ -127,6 +132,20 @@ User-Agent: murzik/1.0
 """
 
 
+post_sample = """
+POST /bears HTTP/1.1
+Host: example.com
+User-Agent: murzik/1.0
+Accept: */*
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 21
+
+name=Balamut&type=Brown
+"""
+
+
+
+
 Servy.Handler.initialize
 response = Servy.Handler.handle(request)
 IO.puts response
@@ -141,3 +160,6 @@ IO.puts Servy.Handler.handle(request_wildlife)
 
 IO.puts Servy.Handler.handle(request_bigf)
 IO.puts Servy.Handler.handle(request_about)
+
+
+IO.puts Servy.Handler.handle(post_sample)

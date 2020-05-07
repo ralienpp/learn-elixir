@@ -1,5 +1,5 @@
 defmodule Servy.Conv do
-	defstruct method: "", path: "", resp_body: "", status: nil
+	defstruct method: "", path: "", resp_body: "", status: nil, params: %{}
 
 	def full_status(conv) do
 		"#{conv.status} #{status_reason(conv.status)}"
@@ -10,6 +10,7 @@ defmodule Servy.Conv do
 		# works inside this module
 		%{
 			200 => "OK",
+			201 => "Created",
 			404 => "Not found",
 			500 => "Internal server error"
 		}[code]
