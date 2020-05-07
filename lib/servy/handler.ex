@@ -40,7 +40,7 @@ defmodule Servy.Handler do
 	    	|> String.split("\n")
 	    	|> List.first
 	    	|> String.split(" ")
-		%{method: method, path: url, resp_body: ""}
+		%{method: method, path: url, resp_body: "", status: nil}
 	end
 
 	def route_old(conv) do
@@ -57,27 +57,40 @@ defmodule Servy.Handler do
 	end
 
 	def route(conv, "GET","/url") do
-		%{conv| resp_body: "generic url"}
+		%{conv| status: 200, resp_body: "generic url"}
 	end
 
 	def route(conv, "GET", "/bears") do
-		%{conv| resp_body: "specific url for bears"}
+		%{conv| status: 200, resp_body: "specific url for bears"}
 	end
 
 	# this is a default handler which is invoked when
 	# none of the above `route` functions is matched
+	# NOTE that it must be physically the last entry,
+	#      otherwise it will eagerly match anything
+	#      and the other handlers won't be invoked.
 	def route(conv, _method, _path) do
-		%{conv| resp_body: "No such path on the server"}
+		%{conv| status: 404, resp_body: "No such path on the server"}
 	end
 
 	def format_response(conv) do
 		"""
-		HTTP/1.1 200 OK
+		HTTP/1.1 #{conv.status} #{status_reason(conv.status)}
 		Content-Type: text/plain
 		Content-Length: #{String.length(conv.resp_body)}
 
 		#{conv.resp_body}
 		"""
+	end
+
+	defp status_reason(code) do
+		# defp makes it a "private" function that only
+		# works inside this module
+		%{
+			200 => "OK",
+			404 => "Not found",
+			500 => "Internal server error"
+		}[code]
 	end
 end
 
