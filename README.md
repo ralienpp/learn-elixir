@@ -4,6 +4,8 @@ Hello world in Elixir
 
 ## Usage
 
+Run `iex -S mix` in the top directory
+
 `elixir lib/servy/handler.ex`
 
 ## Installation

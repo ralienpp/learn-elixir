@@ -1,30 +1,3 @@
-defmodule Servy.Plugins do
-	@doc "Logs 404 requests, indicating their path"
-	def track(%{status: 404, path: path} = conv) do
-		IO.puts "Warning, no such path `#{path}`"
-		# make sure you return the conv here, so the
-		# pipeline keeps flowing
-		conv
-	end
-
-	# default handler for all other cases of `track`
-	def track(conv), do: conv
-
-
-	# this will only change the paths that begin with
-	# "/wildlife"
-	def rewrite_path(%{path: "/wildlife"} = conv) do
-		%{conv|path: "/wildthings"}
-	end
-
-	# default handler for the above, all the other paths
-	# will fall to this handler and leave things unchanged
-	def rewrite_path(conv), do: conv
-
-	def log(conv), do: IO.inspect conv
-end
-
-
 defmodule Servy.Handler do
 
 	@moduledoc "Basic handler of HTTP requests."
@@ -34,6 +7,7 @@ defmodule Servy.Handler do
 	# Explicitly say which functions (and their arity) you want to import,
 	# otherwise everything will be imported
 	import Servy.Plugins, only: [rewrite_path: 1, log: 1, track: 1]
+	import Servy.Parser, only: [parse: 1]
 
 	def initialize do
 		IO.puts "Starting server v.#{@version}"
@@ -49,17 +23,6 @@ defmodule Servy.Handler do
 		|> track
 		|> format_response
 	end
-
-	# this one is idiomatic Elixir
-	def parse(request) do
-	    [method, url, _version] =
-	    	request
-	    	|> String.split("\n")
-	    	|> List.first
-	    	|> String.split(" ")
-		%{method: method, path: url, resp_body: "", status: nil}
-	end
-
 
 	def route(%{method: "GET", path: "/url"} = conv) do
 		%{conv| status: 200, resp_body: "generic url"}
