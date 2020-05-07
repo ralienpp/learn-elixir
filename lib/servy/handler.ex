@@ -42,19 +42,16 @@ defmodule Servy.Handler do
 		%{method: method, path: url, resp_body: "", status: nil}
 	end
 
-	def route(conv) do
-		route(conv, conv.method, conv.path)
-	end
 
-	def route(conv, "GET","/url") do
+	def route(%{method: "GET", path: "/url"} = conv) do
 		%{conv| status: 200, resp_body: "generic url"}
 	end
 
-	def route(conv, "GET", "/bears") do
+	def route(%{method: "GET", path: "/bears"} = conv) do
 		%{conv| status: 200, resp_body: "specific url for bears"}
 	end
 
-	def route(conv, "GET", "/bears/" <> id) do
+	def route(%{method: "GET", path: "/bears/" <> id} = conv) do
 		%{conv| status: 200, resp_body: "Bear ID=#{id}"}
 	end
 
@@ -63,7 +60,7 @@ defmodule Servy.Handler do
 	# NOTE that it must be physically the last entry,
 	#      otherwise it will eagerly match anything
 	#      and the other handlers won't be invoked.
-	def route(conv, _method, _path) do
+	def route(%{path: path} = conv) do
 		%{conv| status: 404, resp_body: "No such path on the server"}
 	end
 
