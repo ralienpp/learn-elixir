@@ -1,4 +1,9 @@
 defmodule Servy.Parser do
+
+	# alias Servy.Conv, as: Conv
+	# same as above, but more concise
+	alias Servy.Conv
+
 	def parse(request) do
 	    [method, url, _version] =
 	    	request
@@ -9,6 +14,6 @@ defmodule Servy.Parser do
 	    # We treat this as a struct, not as a regular map,
 	    # note that we don't provide values for all elements,
 	    # because they're already defined in the struct itself.
-	    %Servy.Conv{method: method, path: url}
+	    %Conv{method: method, path: url}
 	end
 end
