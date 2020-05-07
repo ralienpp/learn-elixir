@@ -1,6 +1,7 @@
 defmodule Servy.Handler do
 
 	@moduledoc "Basic handler of HTTP requests."
+	alias Servy.Conv
 
 	@version "0.0.4"
 
@@ -24,19 +25,19 @@ defmodule Servy.Handler do
 		|> format_response
 	end
 
-	def route(%{method: "GET", path: "/url"} = conv) do
+	def route(%Conv{method: "GET", path: "/url"} = conv) do
 		%{conv| status: 200, resp_body: "generic url"}
 	end
 
-	def route(%{method: "GET", path: "/bears"} = conv) do
+	def route(%Conv{method: "GET", path: "/bears"} = conv) do
 		%{conv| status: 200, resp_body: "specific url for bears"}
 	end
 
-	def route(%{method: "GET", path: "/bears/" <> id} = conv) do
+	def route(%Conv{method: "GET", path: "/bears/" <> id} = conv) do
 		%{conv| status: 200, resp_body: "Bear ID=#{id}"}
 	end
 
-	def route(%{method: "GET", path: "/about"} = conv) do
+	def route(%Conv{method: "GET", path: "/about"} = conv) do
 		File.read("pages/about.html")
 		# NOTE: the tuple returned by File.read is implicitly
 		#		the first argument passed to the next function
@@ -50,7 +51,7 @@ defmodule Servy.Handler do
 	# NOTE that it must be physically the last entry,
 	#      otherwise it will eagerly match anything
 	#      and the other handlers won't be invoked.
-	def route(%{path: path} = conv) do
+	def route(%Conv{path: path} = conv) do
 		%{conv| status: 404, resp_body: "No such path on the server #{path}"}
 	end
 
@@ -66,7 +67,7 @@ defmodule Servy.Handler do
 		%{conv| status: 500, resp_body: "File error: #{reason}"}
 	end
 
-	def format_response(conv) do
+	def format_response(%Conv{} = conv) do
 		"""
 		HTTP/1.1 #{conv.status} #{status_reason(conv.status)}
 		Content-Type: text/plain
