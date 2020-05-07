@@ -67,25 +67,21 @@ defmodule Servy.Handler do
 	end
 
 	def route(%{method: "GET", path: "/about"} = conv) do
-		case File.read("pages/about.html") do
-			{:ok, content} ->
-				%{conv| status: 200, resp_body: "#{content}"}
-
-			{:error, :enoent} ->
-				%{conv| status: 404, resp_body: "File not found, schade!"}
-
-			{:error, reason} ->
-				%{conv| status: 500, resp_body: "File error: #{reason}"}
-		end
-	end
-
-	def route(%{method: "GET", path: "/about"} = conv) do
 		File.read("pages/about.html")
 		# NOTE: the tuple returned by File.read is implicitly
 		#		the first argument passed to the next function
 		#		in the pipeline; this is now shown, to have a
 		#		laconic representation
 		|> handle_file(conv)
+	end
+
+	# this is a default handler which is invoked when
+	# none of the above `route` functions is matched
+	# NOTE that it must be physically the last entry,
+	#      otherwise it will eagerly match anything
+	#      and the other handlers won't be invoked.
+	def route(%{path: path} = conv) do
+		%{conv| status: 404, resp_body: "No such path on the server #{path}"}
 	end
 
 	def handle_file({:ok, content}, conv) do
@@ -98,15 +94,6 @@ defmodule Servy.Handler do
 
 	def handle_file({:error, reason}, conv) do
 		%{conv| status: 500, resp_body: "File error: #{reason}"}
-	end
-
-	# this is a default handler which is invoked when
-	# none of the above `route` functions is matched
-	# NOTE that it must be physically the last entry,
-	#      otherwise it will eagerly match anything
-	#      and the other handlers won't be invoked.
-	def route(%{path: path} = conv) do
-		%{conv| status: 404, resp_body: "No such path on the server #{path}"}
 	end
 
 	def format_response(conv) do
