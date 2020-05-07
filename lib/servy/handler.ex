@@ -31,7 +31,9 @@ defmodule Servy.Handler do
 
 	@version "0.0.4"
 
-	import Servy.Plugins
+	# Explicitly say which functions (and their arity) you want to import,
+	# otherwise everything will be imported
+	import Servy.Plugins, only: [rewrite_path: 1, log: 1, track: 1]
 
 	def initialize do
 		IO.puts "Starting server v.#{@version}"
