@@ -1,24 +1,4 @@
-defmodule Servy.Handler do
-
-	@moduledoc "Basic handler of HTTP requests."
-
-	@version "0.0.4"
-
-	def initialize do
-		IO.puts "Starting server v.#{@version}"
-	end
-
-	@doc "Transforms a request into a response"
-	def handle(request) do
-		request
-		|> parse
-		|> rewrite_path
-		|> log
-		|> route
-		|> track
-		|> format_response
-	end
-
+defmodule Servy.Plugins do
 	@doc "Logs 404 requests, indicating their path"
 	def track(%{status: 404, path: path} = conv) do
 		IO.puts "Warning, no such path `#{path}`"
@@ -42,6 +22,29 @@ defmodule Servy.Handler do
 	def rewrite_path(conv), do: conv
 
 	def log(conv), do: IO.inspect conv
+end
+
+
+defmodule Servy.Handler do
+
+	@moduledoc "Basic handler of HTTP requests."
+
+	@version "0.0.4"
+
+	def initialize do
+		IO.puts "Starting server v.#{@version}"
+	end
+
+	@doc "Transforms a request into a response"
+	def handle(request) do
+		request
+		|> parse
+		|> Servy.Plugins.rewrite_path
+		|> Servy.Plugins.log
+		|> route
+		|> Servy.Plugins.track
+		|> format_response
+	end
 
 	# this one is idiomatic Elixir
 	def parse(request) do
