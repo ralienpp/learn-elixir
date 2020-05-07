@@ -41,21 +41,6 @@ defmodule Servy.Handler do
 	# same as above
 	def log(conv), do: IO.inspect conv
 
-	def parse_sosolala(request) do
-	    first_line = request |> String.split("\n") |> List.first
-
-	    # parts = String.split(first_line, " ")
-	    # method = Enum.at(parts, 0)
-	    # url = Enum.at(parts, 1)
-
-	    [method, url, _version] = String.split(first_line, " ")
-
-		# conv = %{method: method, path: url, resp_body: ""}
-		# The last expression is returned by default, so we can
-		# just get rid of it
-		%{method: method, path: url, resp_body: ""}
-	end
-
 	# this one is idiomatic Elixir
 	def parse(request) do
 	    [method, url, _version] =
